@@ -1,3 +1,11 @@
+#VSCODE
+.vscode/
+
+
+#lock Files
+*.lock
+*lock.json
+
 # Logs
 logs
 *.log
