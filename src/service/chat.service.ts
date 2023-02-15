@@ -1,24 +1,43 @@
-import axios from 'axios';
+import config from 'config';
 import log from '../utils/logger';
-const API_KEY = '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';
+
+import { Configuration, OpenAIApi } from "openai";
+const configuration = new Configuration({
+    organization: config.get<string>('openai.organization'),
+    apiKey: config.get<string>('openai.key'),
+});
+const openai = new OpenAIApi(configuration);
 
 export async function generateResponse(prompt: string) {
-  const response = await axios.post(
-    'https://api.openai.com/v1/completions',
-    {
+  try{
+    const {data} = await openai.createCompletion({
       model: 'text-ada-001',
       prompt,
-      temperature: 0,
-      max_tokens: 100,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${API_KEY}`,
-      },
-    },
-  );
+      temperature: 1,
+      max_tokens: 2000,
+      n: 1,
+    });
 
-  log.info(`Generated response: ${response.data.choices}`);
-  return response.data.choices[0].text;
+    return data;
+  }
+  catch(e){
+    log.info(`Error generated response: ${e}`);
+  }
+}
+
+export async function generateKeywords(input: string, instruction: string) {
+  try{
+    const {data} = await openai.createEdit({
+      model: 'text-davinci-edit-001',
+      input,
+      instruction,
+      temperature: 1,
+      n: 1,
+    });
+
+    return data;
+  }
+  catch(e){
+    log.info(`Error generated response: ${e}`);
+  }
 }

@@ -10,9 +10,9 @@ export async function getGeneratedResponse(
   const { prompt } = req.body;
   log.info(`Generating response for prompt: ${prompt}`);
   try {
-    const a = await generateResponse(prompt);
-    log.info(`Generated response: ${a}`);
-    return res.send(a);
+    const response = await generateResponse(prompt);
+    log.info(`Generated response: ${response}`);
+    return res.send(response);
   } catch (e: any) {
     log.info(`Error generating response: ${e}`);
     return res.status(500).send(e);

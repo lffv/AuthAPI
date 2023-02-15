@@ -6,10 +6,12 @@ import {
   Severity,
   pre,
   index,
+  Ref,
 } from '@typegoose/typegoose';
 import argon2 from 'argon2';
 import { nanoid } from 'nanoid';
 import log from '../utils/logger';
+import { Avatar } from './avatar.model';
 
 export const privateFields = [
   'password',
@@ -37,6 +39,7 @@ export const privateFields = [
     allowMixed: Severity.ALLOW,
   },
 })
+
 export class User {
   @prop({ lowercase: true, unique: true, required: true })
   email: string;
@@ -59,6 +62,9 @@ export class User {
   @prop({ default: false })
   verified: boolean;
 
+  @prop({ ref: () => Avatar })
+  public avatars?: Ref<Avatar>[];
+
   async validatePassword(this: DocumentType<User>, candidatePassword: string) {
     try {
       return await argon2.verify(this.password, candidatePassword);
@@ -68,7 +74,3 @@ export class User {
     }
   }
 }
-
-const UserModel = getModelForClass(User);
-
-export default UserModel;
